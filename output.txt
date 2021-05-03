@@ -1,0 +1,173 @@
+(and
+
+( =>
+    (and
+        (or (= p p) (= p r) (= p q) (= p c4) (= p c5))
+        (or (= q p) (= q r) (= q q) (= q c4) (= q c5))
+        (or (= c1 p) (= c1 r) (= c1 q) (= c1 c4) (= c1 c5))
+        (or (= c2 p) (= c2 r) (= c2 q) (= c2 c4) (= c2 c5))
+        (or (= c3 p) (= c3 r) (= c3 q) (= c3 c4) (= c3 c5))
+    )
+
+    (and
+        (or (= c4 c1 ) (= c4 c2 ) (= c4 c3 ))
+        (or (= c5 c1 ) (= c5 c2 ) (= c5 c3 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p p) (= p r) (= p not-q) (= p c4) (= p c5))
+        (or (= q p) (= q r) (= q not-q) (= q c4) (= q c5))
+        (or (= c1 p) (= c1 r) (= c1 not-q) (= c1 c4) (= c1 c5))
+        (or (= c2 p) (= c2 r) (= c2 not-q) (= c2 c4) (= c2 c5))
+        (or (= c3 p) (= c3 r) (= c3 not-q) (= c3 c4) (= c3 c5))
+    )
+
+    (and
+        (or (= c4 c1 ) (= c4 c2 ) (= c4 c3 ))
+        (or (= c5 c1 ) (= c5 c2 ) (= c5 c3 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p p) (= p not-r) (= p c6))
+        (or (= q p) (= q not-r) (= q c6))
+        (or (= c1 p) (= c1 not-r) (= c1 c6))
+        (or (= c2 p) (= c2 not-r) (= c2 c6))
+        (or (= c3 p) (= c3 not-r) (= c3 c6))
+    )
+
+    (and
+        (or (= c6 c1 ) (= c6 c2 ) (= c6 c3 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p not-p) (= p c7))
+        (or (= q not-p) (= q c7))
+        (or (= c1 not-p) (= c1 c7))
+        (or (= c2 not-p) (= c2 c7))
+        (or (= c3 not-p) (= c3 c7))
+    )
+
+    (and
+        (or (= c7 c1 ) (= c7 c2 ) (= c7 c3 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p p) (= p r) (= p q) (= p c4) (= p c5))
+        (or (= not-q p) (= not-q r) (= not-q q) (= not-q c4) (= not-q c5))
+        (or (= c4 p) (= c4 r) (= c4 q) (= c4 c4) (= c4 c5))
+        (or (= c5 p) (= c5 r) (= c5 q) (= c5 c4) (= c5 c5))
+        (or (= c6 p) (= c6 r) (= c6 q) (= c6 c4) (= c6 c5))
+    )
+
+    (and
+        (or (= c4 c4 ) (= c4 c5 ) (= c4 c6 ))
+        (or (= c5 c4 ) (= c5 c5 ) (= c5 c6 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p p) (= p r) (= p not-q) (= p c4) (= p c5))
+        (or (= not-q p) (= not-q r) (= not-q not-q) (= not-q c4) (= not-q c5))
+        (or (= c4 p) (= c4 r) (= c4 not-q) (= c4 c4) (= c4 c5))
+        (or (= c5 p) (= c5 r) (= c5 not-q) (= c5 c4) (= c5 c5))
+        (or (= c6 p) (= c6 r) (= c6 not-q) (= c6 c4) (= c6 c5))
+    )
+
+    (and
+        (or (= c4 c4 ) (= c4 c5 ) (= c4 c6 ))
+        (or (= c5 c4 ) (= c5 c5 ) (= c5 c6 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p p) (= p not-r) (= p c6))
+        (or (= not-q p) (= not-q not-r) (= not-q c6))
+        (or (= c4 p) (= c4 not-r) (= c4 c6))
+        (or (= c5 p) (= c5 not-r) (= c5 c6))
+        (or (= c6 p) (= c6 not-r) (= c6 c6))
+    )
+
+    (and
+        (or (= c6 c4 ) (= c6 c5 ) (= c6 c6 ))
+    )
+)
+
+( =>
+    (and
+        (or (= p not-p) (= p c7))
+        (or (= not-q not-p) (= not-q c7))
+        (or (= c4 not-p) (= c4 c7))
+        (or (= c5 not-p) (= c5 c7))
+        (or (= c6 not-p) (= c6 c7))
+    )
+
+    (and
+        (or (= c7 c4 ) (= c7 c5 ) (= c7 c6 ))
+    )
+)
+
+( =>
+    (and
+        (or (= not-p p) (= not-p r) (= not-p q) (= not-p c4) (= not-p c5))
+        (or (= c7 p) (= c7 r) (= c7 q) (= c7 c4) (= c7 c5))
+        (or (= c8 p) (= c8 r) (= c8 q) (= c8 c4) (= c8 c5))
+        (or (= c9 p) (= c9 r) (= c9 q) (= c9 c4) (= c9 c5))
+    )
+
+    (and
+        (or (= c4 c7 ) (= c4 c8 ) (= c4 c9 ))
+        (or (= c5 c7 ) (= c5 c8 ) (= c5 c9 ))
+    )
+)
+
+( =>
+    (and
+        (or (= not-p p) (= not-p r) (= not-p not-q) (= not-p c4) (= not-p c5))
+        (or (= c7 p) (= c7 r) (= c7 not-q) (= c7 c4) (= c7 c5))
+        (or (= c8 p) (= c8 r) (= c8 not-q) (= c8 c4) (= c8 c5))
+        (or (= c9 p) (= c9 r) (= c9 not-q) (= c9 c4) (= c9 c5))
+    )
+
+    (and
+        (or (= c4 c7 ) (= c4 c8 ) (= c4 c9 ))
+        (or (= c5 c7 ) (= c5 c8 ) (= c5 c9 ))
+    )
+)
+
+( =>
+    (and
+        (or (= not-p p) (= not-p not-r) (= not-p c6))
+        (or (= c7 p) (= c7 not-r) (= c7 c6))
+        (or (= c8 p) (= c8 not-r) (= c8 c6))
+        (or (= c9 p) (= c9 not-r) (= c9 c6))
+    )
+
+    (and
+        (or (= c6 c7 ) (= c6 c8 ) (= c6 c9 ))
+    )
+)
+
+( =>
+    (and
+        (or (= not-p not-p) (= not-p c7))
+        (or (= c7 not-p) (= c7 c7))
+        (or (= c8 not-p) (= c8 c7))
+        (or (= c9 not-p) (= c9 c7))
+    )
+
+    (and
+        (or (= c7 c7 ) (= c7 c8 ) (= c7 c9 ))
+    )
+)
+
+)
