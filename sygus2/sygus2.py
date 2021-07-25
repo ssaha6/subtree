@@ -650,6 +650,35 @@ class SygusDisjunctive:
     
 
 
+    def learn(self, cdt=None):
+        cdt = self.cdt if cdt is None else cdt
+        
+        # sort by height... height = longest length of a path/string ... 
+        for tree_paths in self.all_trees:
+            constraint = self.create_constraint(tree_paths, cdt)
+            
+            open("test_eval.smt2", "w").write(constraint.replace("\t", "    "))
+            
+            solution = self.run_sat(constraint)
+            if solution:
+                
+                for k, value in self.pvariables.items():
+                    print("\n")
+                    for v in value:
+                        print(v, ":", solution[v])
+                
+                print("\n")
+                for w in self.wvariables:
+                    print(w, ":", solution[w])
+                
+                return solution
+            
+            # debug: for one path 
+            sys.exit(0)
+        
+        return None
+    
+    
 def run_sat(self, constraint):
         z3.set_option(max_args=10000000, max_lines=1000000, max_depth=10000000, max_visited=1000000)
         solver = z3.Solver()
