@@ -4,6 +4,7 @@ import re
 from z3 import *;
 import sys
 
+
 distcintConditionals = True
 
 class Nd:
@@ -140,8 +141,8 @@ class SygusDisjunctive:
             
             result.append(row)
         return result
-    
-    
+
+
     #==================================================================================================
     
     
@@ -335,7 +336,7 @@ class SygusDisjunctive:
         return ret
     
     #==================================================================================================
-
+    
     
     def insert_leaf(self, root, path): 
         root_itr = root
@@ -540,7 +541,7 @@ class SygusDisjunctive:
     
     
     #==================================================================================================
-    
+
     def pred_neq_pred(self, symbolic_pred_index, concrete_pred_index):
         
         # to complete from cdt in unary 
@@ -571,8 +572,8 @@ class SygusDisjunctive:
             else:
                 nfv.append(data)
         return fv, nfv
-
-
+        
+        
     def dt_subset(self, dt_paths, dt_root, cdt_paths, cdt_root):
         # cdt_paths = ["1", "00", "010", "011"]
         # dt_paths  = ["1", "01", "000", "001"]
@@ -648,8 +649,8 @@ class SygusDisjunctive:
         
         return constraint
     
-
-
+    
+    
     def learn(self, cdt=None):
         cdt = self.cdt if cdt is None else cdt
         
@@ -679,7 +680,7 @@ class SygusDisjunctive:
         return None
     
     
-def run_sat(self, constraint):
+    def run_sat(self, constraint):
         z3.set_option(max_args=10000000, max_lines=1000000, max_depth=10000000, max_visited=1000000)
         solver = z3.Solver()
         solver.add(z3.parse_smt2_string(constraint))
@@ -696,8 +697,8 @@ def run_sat(self, constraint):
             
             return solution
             
-            
-            
+        
+
 
 def main(): 
     
