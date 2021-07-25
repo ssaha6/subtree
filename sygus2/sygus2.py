@@ -604,20 +604,23 @@ class SygusDisjunctive:
 
 def main(): 
 
-    solver1 = SygusDisjunctive(
 
-                    ["cond1", "cond2", "x>3", "x>=1", "eq1", "eq2", "eq3"],
-                    
-                    [["true", "false", "true", "true","true", "false", "true"],
-                    ["true", "true", "true", "true","false", "false", "false"]],
-                    
-                    k=2,
-                    cdt="(and cond1 x>3)"
-                )
-    
-    output_tree = solver1.run_sygus()
-    stringTree = output_tree.parse()
-    print(stringTree)
+
+
+#     solver1 = SygusDisjunctive(
+# 
+#                     ["cond1", "cond2", "x>3", "x>=1", "eq1", "eq2", "eq3"],
+#                     
+#                     [["true", "false", "true", "true","true", "false", "true"],
+#                     ["true", "true", "true", "true","false", "false", "false"]],
+#                     
+#                     k=2,
+#                     cdt="(and cond1 x>3)"
+#                 )
+#     
+#     output_tree = solver1.run_sygus()
+#     stringTree = output_tree.parse()
+#     print(stringTree)
     
     # t = "true"
     # f = "false"
