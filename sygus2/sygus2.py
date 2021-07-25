@@ -241,17 +241,17 @@ class SygusDisjunctive:
     #==================================================================================================
     
     
-    def selectme_statement(self, k):
+    def selectme_statement(self, pred_index):
         selectme_list = []
         for s_i in range(len(self.cond_pred_data)):
             ret = " (selectme "
             end = "" 
             for p_itr in range(len(self.cond_pred)):
                     ret += " " + self.cond_pred_data[s_i][p_itr] + " "
-                    end += " p_"+ str(k) + "_" + self.cond_pred[p_itr] + " "
+                    end += " SPred_"+ str(pred_index) + "_" + self.cond_pred[p_itr] + " "
             ret += end + ") "
             selectme_list.append(ret)
-
+        
         return selectme_list
     
     
