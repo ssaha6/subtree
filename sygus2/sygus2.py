@@ -178,7 +178,7 @@ class SygusDisjunctive:
         return ret
     
     def generate_constraint(self):
-        ret = "(constraint \n(and\n"
+        ret = "\n(assert \n(and\n"
                 
         for k_itr in range(self.k):
             ret += "(or " + ' '.join(self.pvariables[k_itr]) + ")\n"
@@ -186,12 +186,13 @@ class SygusDisjunctive:
                     ret += "(=> " + self.pvariables[k_itr][p_itr] + " (and "
                     ret += ' '.join(list(map(lambda x: "( not " + x + ")", self.pvariables[k_itr][0:p_itr] + self.pvariables[k_itr][p_itr+1:]))) 
                     ret += "))\n"
-            
-        ret += '( => ( eval ' + ' '.join(self.uvariables) + ' ' \
-                              + ") (cdt " + ' '.join(self.uvariables) + "))\n"
-                              
-        ret += "(cdt " + ' '.join(self.wvariables) + ")\n"
-        ret += "(not (eval " + " ".join(self.wvariables) + " ))\n"
+        
+        # turning off universal checking
+        # ret += '( => ( eval ' + ' '.join(self.uvariables) + ' ' \
+        #                       + ") (cdt " + ' '.join(self.uvariables) + "))\n"
+        
+        ret += "\n(cdt " + ' '.join(self.wvariables) + ")\n"
+        ret += "(not (eval " + " ".join(self.wvariables) + " ))\n\n"
         
         
         if distcintConditionals:
@@ -200,11 +201,11 @@ class SygusDisjunctive:
             if self.k > 1:
                 for p_itr in range(len(self.cond_pred)):
                     for i in range(self.k):
-                        ret += "(=>  p_" + str(i) + "_" + self.cond_pred[p_itr] + " (and true "
+                        ret += "(=>  SPred_" + str(i) + "_" + self.cond_pred[p_itr] + " (and true "
                         for j in range(self.k):
                             if i == j:
                                 continue
-                            ret += " (not p_" + str(j) + "_" + self.cond_pred[p_itr] + " )" 
+                            ret += " (not SPred_" + str(j) + "_" + self.cond_pred[p_itr] + " )" 
                         ret += ") )\n"
         
         
@@ -227,14 +228,17 @@ class SygusDisjunctive:
     
     def generate_static_file(self):
         return  str(
-                    self.set_logic() + "\n"
-                    + self.synth_conditionals() + "\n"
-                    + self.synth_witness() + "\n"
-                    + self.define_CDT() + "\n"
-                    + self.declare_universal_variables() + "\n"
-                    + self.generate_selectme_fn() + "\n"
+                    self.pp_options() + "\n" +
+                    # self.set_logic() + "\n" + 
+                    self.synth_conditionals() + "\n" + 
+                    self.synth_witness() + "\n" + 
+                    self.generate_selectme_fn() + "\n" + 
+                    
+                    self.define_CDT() + "\n"
+                    # + self.declare_universal_variables() + "\n"
                 )
     
+    #==================================================================================================
     
     
     def selectme_statement(self, k):
