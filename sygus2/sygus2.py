@@ -44,11 +44,9 @@ class Node(Nd):
 
 class SygusDisjunctive:
     def __init__(self, pred_names, pred_data,  k, cdt="true"):
-        #self.cond_pred = pred_names
-        #self.cond_pred = [x.replace(" ","aaa") for x in pred_names]
+        
+        # all predicates and the fvs
         self.cond_pred = pred_names
-        #self.cond_pred  = pred_names
-        #print(self.cond_pred)
         self.cond_pred_data = pred_data
         
         assert(k>0)
@@ -58,17 +56,20 @@ class SygusDisjunctive:
         self.dp_trees = {} 
         self.all_trees = self.generate_all_trees(k)
         
+        # unary encoding of predicates we are synthesizing
         self.pvariables = {}
         for k_itr in range(self.k):
             self.pvariables[k_itr] = []
             for p_itr in self.cond_pred:
-                self.pvariables[k_itr].append('p_'+str(k_itr) + '_' + p_itr)
+                self.pvariables[k_itr].append('SPred_'+str(k_itr) + '_' + p_itr)
         
-        self.wvariables = [] 
-        self.uvariables = []
+        self.wvariables = [] #witness
         for pred  in self.cond_pred: 
-            self.wvariables.append('w_'+pred)
-            self.uvariables.append('u_'+pred)
+            self.wvariables.append('WitnessFV_'+pred)
+        
+        # self.uvariables = [] #universal variables
+        # for pred  in self.cond_pred:    
+        #     self.uvariables.append('u_'+pred)
         
         self.p_count=0
         self.q_count=0  
