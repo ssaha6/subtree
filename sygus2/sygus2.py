@@ -337,13 +337,6 @@ class SygusDisjunctive:
     #==================================================================================================
 
     
-    
-    
-    
-    
-    
-    
-    
     def insert_leaf(self, root, path): 
         root_itr = root
         for node in path: 
@@ -444,7 +437,109 @@ class SygusDisjunctive:
         
         
     #==================================================================================================
-     
+    
+    
+    #return a tree where node.cdt_pred_index_list = list of conjuncts at node
+    #ite-nodes also have list, hence ite can have conjuncts
+    def parse_CDT(self, cdt):
+        
+        # fn to get all variables form a z3-expression
+        # not needed in our code but good to have
+        # def get_vars(f):
+        #     class AstRefKey:
+        #         def __init__(self, n):
+        #             self.n = n
+        #         def __hash__(self):
+        #             return self.n.hash()
+        #         def __eq__(self, other):
+        #             return self.n.eq(other.n)
+        #         def __repr__(self):
+        #             return str(self.n)
+        #     
+        #     def askey(n):
+        #         assert isinstance(n, AstRef)
+        #         return AstRefKey(n)
+        #     
+        #     r = set()
+        #     def collect(f):
+        #         if is_const(f): 
+        #             if f.decl().kind() == Z3_OP_UNINTERPRETED and not askey(f) in r:
+        #                 r.add(askey(f))
+        #         else:
+        #             for c in f.children():
+        #                 collect(c)
+        #     
+        #     collect(f)
+        #     return r
+        
+        
+        def is_ite(e):
+            # f[0].decl().kind() == Z3_OP_ITE 
+            return is_app_of(e, Z3_OP_ITE)
+        
+        
+        # returns a list of predicates, can handle any conditional
+        # throws exception if cannot parse
+        # Tests: For ["cond1", "cond2", "x>3", "x>=1", "eq1", "eq2", "eq3"]
+        # cdt = "eq1"                       # [eq1]
+        # cdt = "(and x>=1)"                # [x>=1]
+        # cdt = "(and cond1 x>=1)"          # [cond1, x>=1]
+        # cdt = "(and cond1 x>=1 x>=1)"     # [cond1, x>=1, x>=1]
+        # cdt = "(x>=1)"                    # error
+        # cdt = "(and )"                    # error
+        def process_node(e):
+            pred_list = []
+            if is_and(e): #Z3_OP_AND
+                conditionals = e.children()
+                if len(conditionals) == 0:
+                    pred_list = []
+                if len(conditionals) == 1:
+                    pred_list = [conditionals[0]]
+                else:
+                    pred_list = conditionals
+            
+            elif is_const(e) and e.decl().kind() == Z3_OP_UNINTERPRETED:
+                pred_list = [e.decl()]
+            
+            else:  #Z3_OP_IMPLIES? 
+                # pred_list = []
+                assert False, 'Cannot Parse CDT: unknown operator ' + e.decl()
+            
+            return pred_list
+        
+        
+        # Creates a tree from cdt
+        # Tests: For ["cond1", "cond2", "x>3", "x>=1", "eq1", "eq2", "eq3"]
+        # cdt = "(ite cond1 cond2 x>3)"
+        # cdt = "(ite (and cond1) (and cond2 x>3) eq1)"
+        # cdt = "(=> (and cond1) cond2)" #error
+        def visitor(e):
+            root = Node()
+            #if is_app(e):
+            if is_ite(e):
+                [cond, true_branch, flase_branch] = e.children()
+                # assuming no and in internal node
+                root.pred_index = self.get_pred_index((process_node(cond)[0]))
+                root.left = visitor(flase_branch)
+                root.right = visitor(true_branch)
+            
+            else:
+                # process_node throws error if cannot parse
+                root.conj_pred_index_list = self.get_pred_index(process_node(e))
+            
+            return root
+        
+        
+        query = '\n'.join(['(declare-const ' + p + ' Bool)' for p in self.cond_pred])
+        query += "\n (assert " + cdt + ' )\n'
+        ctx = z3.Context()
+        ast = z3.parse_smt2_string(query)
+        root = visitor(ast[0])
+        return root
+    
+    
+    
+    #==================================================================================================
 
 
     
