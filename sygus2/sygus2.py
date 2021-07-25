@@ -279,6 +279,30 @@ class SygusDisjunctive:
         return
     
     
+    def paths_to_tree(self, tree_paths):
+        root = Node() 
+        for path in tree_paths:
+            self.insert_leaf(root, path)
+        
+        return root
+    
+    
+    # Tests:  ["1", "01", "000", "001"]
+    # cdt = "(ite cond1 cond2 (ite cond1 cond2 (ite cond1 cond2 cond2)))"
+    # cdt_root = solver1.parse_CDT(cdt)
+    # cdt_paths = solver1.tree_to_paths(cdt_root)
+    def tree_to_paths(self, root):
+        
+        def concat_prefix(element, list_elements):
+            return list(map(lambda x: str(element) + x, list_elements))
+        
+        if root.is_leaf(): 
+            return [""]
+        else:
+            return  list(concat_prefix("0", self.tree_to_paths(root.left)) + 
+                         concat_prefix("1", self.tree_to_paths(root.right)))
+    
+    
     def label_tree(self, root):
         if not root.selectme:
             root.selectme = [ "" for i in range(len(self.cond_pred_data))] 
