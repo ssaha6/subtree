@@ -255,6 +255,87 @@ class SygusDisjunctive:
         return selectme_list
     
     
+    def eval_label_tree(self, root):
+        if not root.selectme:
+            root.selectme = [ "" for i in range(len(self.cond_pred_data))] 
+        
+        #leaf
+        # if not root.left and not root.right:
+        if root.is_leaf():
+            ret = "(and \n"
+            
+            # added leaf index constrain to check for paths
+            # ret += "\t(=> path leaf_"+ str(root.leaf_index) +" )\n"
+            
+            for cond_itr in range(len(self.cond_pred)):
+                ret += "\t(=> " + self.cond_pred[cond_itr] + " \n\t\t(and\n"
+                ret += '\n'.join(self.zip_column('\t\t\t(=> (and ', root.selectme , ')' 
+                                    ,  [ x[cond_itr] for x in self.cond_pred_data],  ')' ))
+                ret += "\n\t\t)\n\t)\n"
+            ret += ")\n"
+            
+            root.constraint = ret
+        
+        
+        # non-leaf
+        else:
+            current_selectme = self.selectme_statement(root.pred_index)
+            
+            root.left.selectme = self.zip_column(root.selectme, "(not ", current_selectme, ")")
+            root.right.selectme = self.zip_column(root.selectme, current_selectme)
+            
+            # pvariable index gets assigned to node
+            root.constraint = "(selectme  " + " ".join(self.cond_pred) + " " + " ".join([x  for x in self.pvariables[root.pred_index]]) + " )\n"
+             
+            self.eval_label_tree(root.left )
+            self.eval_label_tree(root.right)
+            
+        return
+    
+    
+    def tree_to_smt(self, node, path):
+        if node.is_leaf():
+            return node.constraint
+        else:
+            if path:
+                direction = path[0]
+                path = path[1:]
+            else:
+                direction = None
+                path = None
+            
+            
+            left  = self.tree_to_smt(node.left , path)
+            right = self.tree_to_smt(node.right, path)
+            
+            if direction == "1":
+                left = "false"
+            elif direction == "0":
+                right = "false"
+            
+            return "(ite\n" + node.constraint + "\n" + right +  "\n" + left + ")\n"
+    
+    
+
+    def generate_eval(self, root, path=None):
+        # moved out of this function
+        # self.eval_label_tree(root)
+        
+        ret= str("(define-fun eval" + ("_" + path if path else "")  + " (" + ' '.join(["(" + x + " Bool)" for x in self.cond_pred]) 
+                 
+                                #     #add path and leaf_index
+                                #    + "(path Bool) " + ' '.join(["(leaf_" + str(index) + " Bool)" for index in range(self.q_count)]) 
+                                   
+                                   + ") Bool\n")
+        #print("here "+self.tree_to_smt(root).replace("aaa"," "))
+        
+        #?? why replace aaa
+        # ret += self.tree_to_smt(root).replace("aaa"," ") + "\n)\n"
+        ret += self.tree_to_smt(root, path) + "\n)\n"
+        return ret
+    
+    #==================================================================================================
+
     
     
     
