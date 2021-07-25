@@ -632,7 +632,28 @@ class SygusDisjunctive:
         return None
 
 
+def run_sat(self, constraint):
+        z3.set_option(max_args=10000000, max_lines=1000000, max_depth=10000000, max_visited=1000000)
+        solver = z3.Solver()
+        solver.add(z3.parse_smt2_string(constraint))
+        check = solver.check()
+        if check == z3.unsat:
+            return None
+        else:
+            solution = {}
+            m = solver.model()
+            # print("x = %s" % m[x])
+            for d in m.decls():
+                # print ("%s = %s" % (d.name(), m[d]))
+                solution[d.name()] = m[d]
+            
+            return solution
+            
+            
+            
+
 def main(): 
+    
     T = "true"
     F = "false"
     solver1 = SygusDisjunctive(
