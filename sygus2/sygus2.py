@@ -678,6 +678,10 @@ class SygusDisjunctive:
                 
                 return solution
             
+            else:
+                print("UNSAT")
+            
+            
             # debug: for one path 
             sys.exit(0)
         
