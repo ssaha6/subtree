@@ -573,6 +573,56 @@ class SygusDisjunctive:
         return fv, nfv
 
 
+    def dt_subset(self, dt_paths, dt_root, cdt_paths, cdt_root):
+        # cdt_paths = ["1", "00", "010", "011"]
+        # dt_paths  = ["1", "01", "000", "001"]
+        
+        allconstraints = ""
+        for pi in dt_paths:
+            for pip in cdt_paths:
+                
+                # pi = "101"
+                # pip = "011"
+                
+                constraint = ""
+                
+                left_pi,  right_pi,  _  = self.extract_pred_from_path(pi,  dt_root )
+                left_pip, right_pip, leaf_pip = self.extract_pred_from_path(pip, cdt_root)
+                
+                # L_pip compatible with L_pi
+                for s_node_index in left_pi:
+                    for c_node_index in right_pip:
+                        constraint += "\n" + self.pred_neq_pred(s_node_index, c_node_index)
+                
+                for s_node_index in right_pi:
+                    for c_node_index in left_pip:
+                        constraint += "\n" + self.pred_neq_pred(s_node_index, c_node_index)
+                
+                
+                # L_pip compatible with C_pi
+                # rejected CFV by pip should also be rejected by pi
+                fv_leaf, nfv_leaf = self.data_by_preds(leaf_pip, [])
+                for fv in nfv_leaf:
+                    constraint +=  "\n" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
+                
+                
+                # C_pip \subseteq  L_pi U C_pi
+                for p in left_pip:
+                    fv_left, nfv_left = self.data_by_preds([], [p])
+                    constraint += "\n(or ;; pred_index = " + str(p)
+                    for fv in nfv_left:
+                        constraint += "\n\t(eval_"+pi+ " " + " ".join(fv) + ")"
+                    constraint += "\n)"
+                
+                
+                constraint = "\n(assert ;; pi = " + pi + ", pip = " + pip + "\n(and " + constraint + "\n))\n"
+                # return constraint
+                
+                allconstraints += constraint
+                
+        return allconstraints
+    
+
 
 
 def run_sat(self, constraint):
