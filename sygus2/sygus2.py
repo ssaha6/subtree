@@ -162,14 +162,14 @@ class SygusDisjunctive:
     def synth_conditionals(self):
         ret = ''
         for k, value in self.pvariables.items():
-            ret += '\n'.join(self.zip_column('(synth-fun ', value, '() Bool )' )) + '\n'
+            ret += '\n'.join(self.zip_column('(declare-const', value, 'Bool)')) + '\n\n'
         return ret
     
     def synth_witness(self):
-        return '\n'.join(self.zip_column( '(synth-fun ', self.wvariables, ' () Bool)' ))
+        return '\n'.join(self.zip_column( '(declare-const', self.wvariables, 'Bool)' )) + '\n\n'
     
-    def declare_universal_variables(self):
-        return '\n'.join(self.zip_column( '(declare-const ', self.uvariables,  ' Bool)'))
+    # def declare_universal_variables(self):
+    #     return '\n'.join(self.zip_column( '(declare-const ', self.uvariables,  ' Bool)'))
     
     def define_CDT(self):
         ret = "(define-fun cdt (" 
