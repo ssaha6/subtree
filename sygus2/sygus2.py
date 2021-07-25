@@ -540,7 +540,37 @@ class SygusDisjunctive:
     
     
     #==================================================================================================
-
+    
+    def pred_neq_pred(self, symbolic_pred_index, concrete_pred_index):
+        
+        # to complete from cdt in unary 
+        concrete_pred = len(self.cond_pred)*['false']
+        concrete_pred[concrete_pred_index] = 'true'
+        
+        symbolic_pred = self.pvariables[symbolic_pred_index] #list of unary encoding symbolic names
+        
+        assert (concrete_pred.count("true") == 1), 'concrete_pred has only one true'
+        assert (len(symbolic_pred) == len(concrete_pred)), 'both must of same length'
+        
+        for p_itr in range(len(concrete_pred)):
+            if concrete_pred[p_itr] == "true":
+                constraint = "(not " + symbolic_pred[p_itr] + ")"
+                return constraint
+        
+        return ""
+    
+    # divide datapoints sat by set of predicates
+    # all true_predicates should be true and 
+    # all flase_predicates should be false
+    def data_by_preds(self, true_predicates, false_predicates):
+        fv = []
+        nfv = []
+        for data in self.cond_pred_data:
+            if all([ data[p] == "true" for p in true_predicates]) and all([ data[p] == "false" for p in false_predicates]):
+                fv.append(data)
+            else:
+                nfv.append(data)
+        return fv, nfv
 
     
     def run_solver(self, constraint):
