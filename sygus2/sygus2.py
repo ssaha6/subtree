@@ -272,9 +272,9 @@ class SygusDisjunctive:
             # ret += "\t(=> path leaf_"+ str(root.leaf_index) +" )\n"
             
             for cond_itr in range(len(self.cond_pred)):
-                ret += "\t(=> " + self.cond_pred[cond_itr] + " \n\t\t(and\n"
-                ret += '\n'.join(self.zip_column('\t\t\t(=> (and ', root.selectme , ')' 
-                                    ,  [ x[cond_itr] for x in self.cond_pred_data],  ')' ))
+                ret += "\t(=> (not " + self.cond_pred[cond_itr] + " )\n\t\t(or\n"
+                ret += '\n'.join(self.zip_column('\t\t\t(and', root.selectme, 
+                                    '(not ' ,  [ x[cond_itr] for x in self.cond_pred_data],  '))' ))
                 ret += "\n\t\t)\n\t)\n"
             ret += ")\n"
             
