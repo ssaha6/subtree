@@ -588,7 +588,7 @@ class SygusDisjunctive:
                 # pi = "101"
                 # pip = "011"
                 
-                constraint = ""
+                pp_constraint = ""
                 
                 left_pi,  right_pi,  _  = self.extract_pred_from_path(pi,  dt_root )
                 left_pip, right_pip, leaf_pip = self.extract_pred_from_path(pip, cdt_root)
@@ -596,30 +596,38 @@ class SygusDisjunctive:
                 # L_pip compatible with L_pi
                 for s_node_index in left_pi:
                     for c_node_index in right_pip:
-                        constraint += "\n" + self.pred_neq_pred(s_node_index, c_node_index)
+                        pp_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
                 
                 for s_node_index in right_pi:
                     for c_node_index in left_pip:
-                        constraint += "\n" + self.pred_neq_pred(s_node_index, c_node_index)
+                        pp_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
                 
                 
                 # L_pip compatible with C_pi
                 # rejected CFV by pip should also be rejected by pi
                 fv_leaf, nfv_leaf = self.data_by_preds(leaf_pip, [])
                 for fv in nfv_leaf:
-                    constraint +=  "\n" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
+                    pp_constraint +=  "\n\t\t" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
                 
-                
+                val_constraints = ""
                 # C_pip \subseteq  L_pi U C_pi
                 for p in left_pip:
                     fv_left, nfv_left = self.data_by_preds([], [p])
-                    constraint += "\n(or ;; pred_index = " + str(p)
+                    val_constraints += "\n\t\t(or ;; pred_index = " + str(p)
                     for fv in nfv_left:
-                        constraint += "\n\t(eval_"+pi+ " " + " ".join(fv) + ")"
-                    constraint += "\n)"
+                        val_constraints += "\n\t\t\t(eval_"+pi+ " " + " ".join(fv) + ")"
+                    val_constraints += "\n\t\t)"
                 
                 
-                constraint = "\n(assert ;; pi = " + pi + ", pip = " + pip + "\n(and " + constraint + "\n))\n"
+                constraint =  str("\n(assert ;; pi = " + pi + ", pip = " + pip
+                                + "\n(=> "
+                                + "\n\t(and"
+                                + pp_constraint
+                                + "\n\t)"
+                                + (("\n\t(and"+ val_constraints+ "\n\t)") if len(val_constraints) > 1 else "\n\ttrue")
+                                + "\n))\n"
+                            )
+                            
                 # return constraint
                 
                 allconstraints += constraint
