@@ -1,6 +1,8 @@
-from Learners.command_runner2 import runCommand
+# from Learners.command_runner2 import runCommand
 import re
-from Learners.houdini import Houdini
+# from Learners.houdini import Houdini
+from z3 import *;
+import sys
 
 distcintConditionals = True
 
@@ -11,63 +13,6 @@ class Nd:
         self.right = None
         self.parent = None
     
-    def __str__(self):
-        if not self.left and not self.right:
-            return "*"
-            # if len(self.data) == 1:
-            #     return self.data[0]
-            # else: 
-            #     return "(and " + ' '.join(self.data) + ")" 
-            
-        else:
-            #left is false branch
-            #right is true branch
-            #(ite  x>=1 (ite  eq2 * * ) * ) ---> (x>1 => ((eq2 =>  ) and (!eq2 => )) ) and (!x>1 => *) 
-            ret = " ".join(["(ite ", str(self.data),str(self.right),  str(self.left), ")"])
-            return ret
-    
-    def parse(self, atoms, boolFvs):
-        if not self.left and not self.right:
-            #Houdini
-            houdini = Houdini()
-            conjunct = houdini.learnHoudiniString(atoms, boolFvs)
-            infixConjunct = '(' + ' && '.join(conjunct) + ')'
-            return infixConjunct
-
-            # if len(self.data) == 1:
-            #     return self.data[0]
-            # else: 
-            #     return "(and " + ' '.join(self.data) + ")" 
-            
-        else:
-            #left is false branch
-            #right is true branch
-            #(ite  x>=1 (ite  eq2 * * ) * ) ---> (x>1 => ((eq2 =>  ) and (!eq2 => )) ) and (!x>1 => *) 
-            #ret = " ".join(["(ite ", self.data ,self.right.parse(),  self.left.parse() , ")"])
-            #( (x>=1 => ((eq2 => *) && ( !(eq2) => *))) && ( !(x>=1) => *))
-            #(pPos, pNeg) = split(self,data, boolFvs)
-            (pPos, pNeg) = Nd.split(self.data, boolFvs)
-            
-            ret =  "((!(" + self.data + ") || " + self.right.parse(atoms, pPos) \
-            + ") && ( " + self.data + " || " + self.left.parse(atoms, pNeg) + "))" 
-            return ret
-    
-    @staticmethod
-    def split(predicate, boolFvs):
-        listPos =[]
-        listNeg= []
-        index = Nd.getIndex(predicate)
-        for vector in boolFvs:
-            if vector[index] == "false":
-                listNeg.append(vector)
-            else:
-                listPos.append(vector)
-        return (listPos, listNeg)
-    
-    @staticmethod
-    def getIndex(string):
-        ret = ''.join([i for i in string if i.isdigit()])
-        return int(ret)
 
 class Node(Nd):
     def __init__(self):
@@ -364,58 +309,8 @@ class SygusDisjunctive:
             
         return None
     
-    # if not self.left and not self.right:
-    #         return "*"
-    #         parentnode = self.parent
-    #         conjunct = true
-    #         while parentnode != None:
-    #             conjunct = conjunct && parentnode.data
-    #             parentnode = parentnode.parent
-            
-    #         filteredSamples = filterSamples(conjunct, data)
-    #         return houdini(filteredSamples, predicates)
-    #         ((x>=1 => ((eq2 => *) && ( !(eq2) => *))) && ( !(x>=1) => *)
-    def project_copy(self, root, predicates_chosen, parent = None):
-            if not root:
-                return None
-            
-            new_root = Nd()
-            
-            if not root.left and not root.right:
-                new_root.data = "*"
-                new_root.parent = parent
-                # new_root.data = equalities_chosen[root.k]
-                
-                
-            else:
-                new_root.data = predicates_chosen[root.k]
-                new_root.left = self.project_copy(root.left, predicates_chosen, new_root)
-                new_root.right = self.project_copy(root.right, predicates_chosen, new_root)
-                new_root.parent = parent
-            return new_root
 
-    # def project_copy(self, root, predicates_chosen):
-    #     if not root:
-    #         return None
-        
-    #     new_root = Nd()
-        
-    #     if not root.left and not root.right:
-    #         # this is the leaf case
-    #         new_root.data = "*"
-    #         new_root.parent = root
-    #         # new_root.data = equalities_chosen[root.k]
-            
-            
-    #     else:
-    #         new_root.data = predicates_chosen[root.k]
-    #         new_root.left = self.project_copy(root.left, predicates_chosen)
-            
-    #         new_root.right = self.project_copy(root.right, predicates_chosen)
 
-    #     return new_root
-    
-    
     def run_sygus(self):
         for tree in self.all_trees:
             
