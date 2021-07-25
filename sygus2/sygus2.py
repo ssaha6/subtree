@@ -178,8 +178,15 @@ class SygusDisjunctive:
         ret += ") Bool \n " + self.cdt + "\n)\n"  
         return ret
     
+    def generate_witness(self):
+        ret = "\n(assert ;; witness\n(and"
+        ret += "\n(cdt " + ' '.join(self.wvariables) + ")\n"
+        ret += "(not (eval " + " ".join(self.wvariables) + " ))\n))\n\n"
+        return ret
+    
+    
     def generate_constraint(self):
-        ret = "\n(assert \n(and\n"
+        ret = "\n(assert ;;unary encoding constraints\n(and\n"
                 
         for k_itr in range(self.k):
             ret += "(or " + ' '.join(self.pvariables[k_itr]) + ")\n"
@@ -191,10 +198,6 @@ class SygusDisjunctive:
         # turning off universal checking
         # ret += '( => ( eval ' + ' '.join(self.uvariables) + ' ' \
         #                       + ") (cdt " + ' '.join(self.uvariables) + "))\n"
-        
-        ret += "\n(cdt " + ' '.join(self.wvariables) + ")\n"
-        ret += "(not (eval " + " ".join(self.wvariables) + " ))\n\n"
-        
         
         if distcintConditionals:
             # add constraint if a predicate is chosen no other node can have that predicate
@@ -643,7 +646,8 @@ class SygusDisjunctive:
                             + self.generate_eval(dt_root, None)  + "\n"
                             + "\n".join([ self.generate_eval(dt_root, path)  for path in dt_paths])
                             + self.generate_constraint() + "\n"
-                            # + self.dt_subset(dt_paths, dt_root, cdt_paths, cdt_root) + '\n'
+                            + self.generate_witness() + "\n"
+                            + self.dt_subset(dt_paths, dt_root, cdt_paths, cdt_root) + '\n'
                             + "(check-sat)\n(get-model)\n"
                         )
         
