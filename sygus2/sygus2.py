@@ -572,64 +572,7 @@ class SygusDisjunctive:
                 nfv.append(data)
         return fv, nfv
 
-    
-    def run_solver(self, constraint):
-        
-        with open("sygus.sl", "w") as file:
-            file.write(constraint)
-        
-        output = runCommand(["./Learners/cvc4-2020-02-06-win64-opt.exe", "--sygus-out=sygus-standard",  "--lang=sygus2", "sygus.sl"])
-        
-        if output: 
-            if "\r\nb" in output: 
-                output = re.sub("\'?\\r\\nb\'?", "\n", output)
 
-            valuation = re.findall('\s*\(define\-fun\s+(.*)\s+\(\s*\)\s+Bool\s+(.*)\s*\)', output) 
-            if len(valuation) == 0:
-                return None
-            else:
-                return valuation 
-            
-        return None
-    
-
-
-    def run_sygus(self):
-        for tree in self.all_trees:
-            
-            root = Node() 
-            for leaf_index in tree:
-                self.insert_leaf(root, leaf_index)
-            
-            self.p_count = 0
-            self.q_count=0 
-            
-            self.label_tree(root)
-                        
-            constraint = str( self.generate_static_file()  + "\n"
-                                    + self.generate_eval(root) +"\n"
-                                    + self.generate_constraint() + "\n"
-                                    + "(check-synth)")
-            # print(constraint)
-            soln = self.run_solver(constraint)
-            
-            if soln:
-                predicates_chosen = {}
-                for i in range(self.k):
-                    for element in soln:
-                        if 'p_' + str(i) + '_' in element[0] and element[1] == 'true':
-                            predicates_chosen[i] = element[0].replace('p_' + str(i) + '_', '')
-                            break
-                
-                new_root = self.project_copy(root, predicates_chosen)
-                    
-                return new_root
-                
-                # return tree, predicates_chosen
-                
-                
-        
-        return None
 
 
 def run_sat(self, constraint):
