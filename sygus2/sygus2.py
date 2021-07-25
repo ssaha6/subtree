@@ -622,7 +622,32 @@ class SygusDisjunctive:
                 
         return allconstraints
     
-
+    
+    def create_constraint(self, dt_paths, cdt):
+        dt_paths  = ["101", "0", "100", "11"]
+        
+        # convert list of paths to a tree
+        dt_root = self.paths_to_tree(dt_paths)
+        self.number_nodes(dt_root)
+        
+        cdt_root = self.parse_CDT(cdt)
+        cdt_paths = self.tree_to_paths(cdt_root)
+        
+        # self.dt_subset(dt_paths, dt_root, cdt_paths, cdt_root) 
+        # print(self.generate_eval(dt_root))
+        
+        self.eval_label_tree(dt_root)
+        
+        constraint = str(     self.generate_static_file()  + "\n"
+                            + self.generate_eval(dt_root, None)  + "\n"
+                            + "\n".join([ self.generate_eval(dt_root, path)  for path in dt_paths])
+                            + self.generate_constraint() + "\n"
+                            # + self.dt_subset(dt_paths, dt_root, cdt_paths, cdt_root) + '\n'
+                            + "(check-sat)\n(get-model)\n"
+                        )
+        
+        return constraint
+    
 
 
 def run_sat(self, constraint):
