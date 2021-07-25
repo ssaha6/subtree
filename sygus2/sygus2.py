@@ -364,60 +364,8 @@ class SygusDisjunctive:
         
     #==================================================================================================
      
-    def label_tree(self, root):
-        if not root.selectme:
-            root.selectme = [ "" for i in range(len(self.cond_pred_data))] 
-        
-        if not root.left and not root.right:
-            root.k = self.q_count
-            self.q_count += 1
-            
-            ret = "(and \n"
-            for cond_itr in range(len(self.cond_pred)):
-                ret += "(=> (not " + self.cond_pred[cond_itr] + " )\n(or\n"
-                ret += '\n'.join(self.zip_column('(and', root.selectme, 
-                                    '(not ' ,  [ x[cond_itr] for x in self.cond_pred_data],  '))' ))
-                ret += "\n)\n)\n"
-            ret += ")\n"
-            
-            root.constraint = ret
-        
-        
-        
-        else:
-            root.k = self.p_count
-            self.p_count += 1
-            
-            current_selectme = self.selectme_statement(root.k)
-            
-            root.left.selectme = self.zip_column(root.selectme, "(not ", current_selectme, ")")
-            root.right.selectme = self.zip_column(root.selectme, current_selectme)
-            
-            root.constraint = "(selectme  " + " ".join(self.cond_pred) + " " + " ".join([x  for x in self.pvariables[root.k]]) + " )\n"
-             
-            self.label_tree(root.left )
-            self.label_tree(root.right)
-            
-        return
-    
-    
-    def tree_to_smt(self, node):
-        if not node.left and not node.right:
-            return node.constraint
-        else:
-            #print(node.constraint)
-            #print(node.constraint.replace("aaa",""))
-            return "(ite\n" + node.constraint + "\n" + self.tree_to_smt(node.right) +  "\n" + self.tree_to_smt(node.left)  + ")\n"
-    
-    
-    
-    def generate_eval(self, root):
-        ret= str("(define-fun eval (" + ' '.join(["( " + x + " Bool)" for x in self.cond_pred]) 
-                                   + ") Bool\n")
-        #print("here "+self.tree_to_smt(root).replace("aaa"," "))
-        ret += self.tree_to_smt(root).replace("aaa"," ") + "\n)\n"
-        return ret
-    
+
+
     
     def run_solver(self, constraint):
         
