@@ -303,6 +303,34 @@ class SygusDisjunctive:
                          concat_prefix("1", self.tree_to_paths(root.right)))
     
     
+    
+    def number_nodes(self, root):
+        def number_nodes_aux(root):
+            # leaf 
+            if not root.left and not root.right:
+                # we dont need to number the leaves
+                root.leaf_index = self.q_count
+                self.q_count += 1
+                pass
+            else:
+                root.pred_index = self.p_count
+                self.p_count += 1
+                # root.predicate = self.pvariables[root.pred_index]
+                
+                number_nodes_aux(root.left )
+                number_nodes_aux(root.right)
+        
+        # label each node with an unique id in self.k
+        # reset id after every use
+        self.p_count = 0
+        self.q_count = 0 
+        
+        number_nodes_aux(root)
+    
+    
+    
+    #==================================================================================================
+ 
     def label_tree(self, root):
         if not root.selectme:
             root.selectme = [ "" for i in range(len(self.cond_pred_data))] 
