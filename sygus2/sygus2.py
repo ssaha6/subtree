@@ -330,7 +330,40 @@ class SygusDisjunctive:
     
     
     #==================================================================================================
- 
+    
+    def extract_pred_from_path(self, path, root):
+        left_preds = []
+        right_preds = []
+        root_temp = root
+        
+        for node in path:
+            if node == "0":
+                left_preds.append(root_temp.pred_index)
+                root_temp = root_temp.left
+            elif node == "1":
+                right_preds.append(root_temp.pred_index)
+                root_temp = root_temp.right
+        
+        # root_temp is a leaf node
+        assert(root_temp.is_leaf())
+        
+        return (left_preds, right_preds, root_temp.conj_pred_index_list)
+    
+    
+    # Converts (z3 decl / string-names) to indexes
+    # can accept list or individual
+    # str() converts z3 decl to string
+    def get_pred_index(self, predicates):
+        if isinstance(predicates, list):
+            return  list(map(lambda x: self.cond_pred.index(str(x)), predicates))
+        else: 
+            return self.cond_pred.index(str(predicates))
+        
+        
+        
+        
+    #==================================================================================================
+     
     def label_tree(self, root):
         if not root.selectme:
             root.selectme = [ "" for i in range(len(self.cond_pred_data))] 
