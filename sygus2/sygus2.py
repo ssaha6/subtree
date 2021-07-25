@@ -662,7 +662,7 @@ class SygusDisjunctive:
         for tree_paths in self.all_trees:
             constraint = self.create_constraint(tree_paths, cdt)
             
-            open("test_eval.smt2", "w").write(constraint.replace("\t", "    "))
+            open("constraint.smt2", "w").write(constraint.replace("\t", "    "))
             
             solution = self.run_sat(constraint)
             if solution:
@@ -670,11 +670,13 @@ class SygusDisjunctive:
                 for k, value in self.pvariables.items():
                     print("\n")
                     for v in value:
-                        print(v, ":", solution[v])
+                        if v in solution.keys():
+                            print(v, ":", solution[v])
                 
                 print("\n")
                 for w in self.wvariables:
-                    print(w, ":", solution[w])
+                    if w in solution.keys():
+                        print(w, ":", solution[w])
                 
                 return solution
             
