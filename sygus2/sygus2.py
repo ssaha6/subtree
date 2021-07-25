@@ -142,6 +142,19 @@ class SygusDisjunctive:
         return result
     
     
+    #==================================================================================================
+    
+    
+    def pp_options(self):
+        smt_options = '''
+(set-option :pp.max_depth 10000000)
+(set-option :pp.max_indent 10000000) 
+(set-option :pp.max_num_lines 10000000) 
+(set-option :pp.max_width 10000000) 
+(set-option :pp.max_ribbon 40) 
+(set-option :pp.min_alias_size 1000000)
+'''
+        return smt_options
     
     def set_logic(self, logic ="BV"):
         return "( set-logic " + logic + " )\n"
