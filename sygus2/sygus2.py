@@ -255,18 +255,27 @@ class SygusDisjunctive:
         return selectme_list
     
     
-    def insert_leaf(self, root, index): 
+    
+    
+    
+    
+    
+    
+    
+    
+    def insert_leaf(self, root, path): 
         root_itr = root
-        for dir in index: 
-            if dir == "0":
+        for node in path: 
+            if node == "0":
                 if not root_itr.left:
                     root_itr.left = Node() 
                 root_itr = root_itr.left
-            if dir == "1":
+            if node == "1":
                 if not root_itr.right:
                     root_itr.right = Node() 
                 root_itr = root_itr.right
-        root_itr.index = index
+        
+        # root_itr.index = index
         return
     
     
