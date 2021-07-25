@@ -11,19 +11,36 @@ class Nd:
         self.data = None
         self.left = None
         self.right = None
-        self.parent = None
     
+    def is_leaf(self):
+        return (not self.left) and (not self.right)
+    
+    def __str__(self):
+        if not self.left and not self.right:
+            return "*"
+            # if len(self.data) == 1:
+            #     return self.data[0]
+            # else: 
+            #     return "(and " + ' '.join(self.data) + ")" 
+            
+        else:
+            #left is false branch
+            #right is true branch
+            #(ite  x>=1 (ite  eq2 * * ) * ) ---> (x>1 => ((eq2 =>  ) and (!eq2 => )) ) and (!x>1 => *) 
+            ret = " ".join(["(ite ", str(self.data),str(self.right),  str(self.left), ")"])
+            return ret
+
 
 class Node(Nd):
     def __init__(self):
         super().__init__()
-        # self.selectme_history = [] 
-        # self.selectme_current = []
         self.selectme = []
-        self.k = None
-        self.index = None
         self.constraint = None
+        self.pred_index = None
+        self.conj_pred_index_list = None
+        self.leaf_index = None
     
+#==================================================================================================
 
 class SygusDisjunctive:
     def __init__(self, pred_names, pred_data,  k, cdt="true"):
