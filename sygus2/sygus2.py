@@ -593,44 +593,56 @@ class SygusDisjunctive:
                     pi = "101"
                     pip = "011"
                 
+                
                 left_pi,  right_pi,  _  = self.extract_pred_from_path(pi,  dt_root )
                 left_pip, right_pip, leaf_pip = self.extract_pred_from_path(pip, cdt_root)
                 
+                
+                ll_constraint = "\n\t(and true"
                 # L_pip compatible with L_pi
                 for s_node_index in left_pi:
                     for c_node_index in right_pip:
-                        pp_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
+                        ll_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
                 
                 for s_node_index in right_pi:
                     for c_node_index in left_pip:
-                        pp_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
+                        ll_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
+                
+                ll_constraint += "\n\t)"
                 
                 
+                
+                lc_constraints = "\n\t(and true"
                 # L_pip compatible with C_pi
+                for p in left_pip:
+                    fv_left, nfv_left = self.data_by_preds([], [p])
+                    lc_constraints += "\n\t\t(or false;; pred_index = " + str(p)
+                    for fv in nfv_left:
+                        lc_constraints += "\n\t\t\t(eval_"+pi+ " " + " ".join(fv) + ")"
+                    lc_constraints += "\n\t\t)"
+                lc_constraints += "\n\t)"
+                
+                
+                subset_constraint = "\n\t(and true"
+                # C_pip \subseteq  L_pi U C_pi
                 # rejected CFV by pip should also be rejected by pi
                 fv_leaf, nfv_leaf = self.data_by_preds(leaf_pip, [])
                 for fv in nfv_leaf:
-                    pp_constraint +=  "\n\t\t" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
+                    subset_constraint +=  "\n\t\t" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
+                subset_constraint += "\n\t)"
                 
-                val_constraints = ""
-                # C_pip \subseteq  L_pi U C_pi
-                for p in left_pip:
-                    fv_left, nfv_left = self.data_by_preds([], [p])
-                    val_constraints += "\n\t\t(or ;; pred_index = " + str(p)
-                    for fv in nfv_left:
-                        val_constraints += "\n\t\t\t(eval_"+pi+ " " + " ".join(fv) + ")"
-                    val_constraints += "\n\t\t)"
                 
                 
                 constraint =  str("\n(assert ;; pi = " + pi + ", pip = " + pip
-                                + "\n(=> "
-                                + "\n\t(and"
-                                + pp_constraint
-                                + "\n\t)"
-                                + (("\n\t(and"+ val_constraints+ "\n\t)") if len(val_constraints) > 1 else "\n\ttrue")
+                                + "\n(=>"
+                                +   "\n\t(and"
+                                +           ll_constraint
+                                +           lc_constraints
+                                +      "\n\t)"
+                                +   subset_constraint
                                 + "\n))\n"
                             )
-                            
+                
                 if self.debug_one_path:
                    return constraint
                 
@@ -642,7 +654,7 @@ class SygusDisjunctive:
     def create_constraint(self, dt_paths, cdt):
         # one fixed structure for debugging
         if self.debug_one_tree:
-        dt_paths  = ["101", "0", "100", "11"]
+            dt_paths  = ["101", "0", "100", "11"]
         
         # convert list of paths to a tree
         dt_root = self.paths_to_tree(dt_paths)
