@@ -73,8 +73,11 @@ class SygusDisjunctive:
         #     self.uvariables.append('u_'+pred)
         
         self.p_count=0
-        self.q_count=0  
-    
+        self.q_count=0
+        
+        self.debug_one_path = False  
+        self.debug_one_tree = True
+        
     
     def generate_all_trees(self, k):
         
@@ -585,10 +588,10 @@ class SygusDisjunctive:
         for pi in dt_paths:
             for pip in cdt_paths:
                 
-                # pi = "101"
-                # pip = "011"
                 
-                pp_constraint = ""
+                if self.debug_one_path:
+                    pi = "101"
+                    pip = "011"
                 
                 left_pi,  right_pi,  _  = self.extract_pred_from_path(pi,  dt_root )
                 left_pip, right_pip, leaf_pip = self.extract_pred_from_path(pip, cdt_root)
@@ -628,7 +631,8 @@ class SygusDisjunctive:
                                 + "\n))\n"
                             )
                             
-                # return constraint
+                if self.debug_one_path:
+                   return constraint
                 
                 allconstraints += constraint
                 
@@ -636,6 +640,8 @@ class SygusDisjunctive:
     
     
     def create_constraint(self, dt_paths, cdt):
+        # one fixed structure for debugging
+        if self.debug_one_tree:
         dt_paths  = ["101", "0", "100", "11"]
         
         # convert list of paths to a tree
@@ -649,6 +655,8 @@ class SygusDisjunctive:
         # print(self.generate_eval(dt_root))
         
         self.eval_label_tree(dt_root)
+        
+        # self.debug_one_path = True
         
         constraint = str(     self.generate_static_file()  + "\n"
                             + self.generate_eval(dt_root, None)  + "\n"
@@ -692,8 +700,8 @@ class SygusDisjunctive:
                 print("UNSAT")
             
             
-            # debug: for one path 
-            sys.exit(0)
+            if self.debug_one_tree:
+                sys.exit(0)
         
         return None
     
