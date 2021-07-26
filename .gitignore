@@ -1,0 +1,6 @@
+
+constraint.smt2
+
+sygus2/pickle/
+
+.vscode/

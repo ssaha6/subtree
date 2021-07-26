@@ -113,7 +113,7 @@ true
  (ite q1 v1
  v2)))
 
-  
+
 
 ;; evalv evaluates the synthesized decision tree on a particular valuation
 ;; of \vec{v}, where the decision tree is implicitly given  \vec{q} or p_k_pred
