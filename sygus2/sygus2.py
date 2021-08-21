@@ -578,8 +578,8 @@ class SygusDisjunctive:
             else:
                 unsat.append(data)
         return sat, unsat
-        
-        
+    
+    
     #==================================================================================================
     
     def dt_subset(self, dt_paths, dt_root, cdt_paths, cdt_root):
@@ -830,30 +830,44 @@ def main():
     
     T = "true"
     F = "false"
+    
     solver1 = SygusDisjunctive(
-                    ["p", "q", "r", "s", "t", "u", "v"],
-                    
-                    # p, q, r : conditions
-                    # s, t : leaf
-                    # u, v : dummy
-                    [ #  p  q  r  s  t   u  v
-                        [F, T, T, T, T,  T, T],
-                        [F, T, T, T, T,  T, F],
-                        [F, T, T, T, T,  F, T],
-                        [F, T, T, T, T,  F, F],
-                        
-                        [T, T, T, T, T,  T, T],
-                        [F, F, T, T, T,  T, F],
-                        [F, T, F, T, T,  F, T],
-                        [F, T, T, F, T,  F, F],
-                        [F, T, T, T, F,  T, T],
-                        
+                    ["p", "q", "r", "s"],
+                    [ 
+                     [T, F, T, T],
+                     [T, F, T, T],
+                     [F, F, T, T]
                     ],
-                    k=3,
-                    cdt="(ite p v (ite q (ite r (and s t) v) v))"
+                    k=1,
+                    cdt="(ite r s s)"
                 )
     
     solver1.learn()
+    
+    
+    
+    # solver1 = SygusDisjunctive(
+    #                 ["p", "q", "r", "s", "t", "u", "v"],
+    #                 
+    #                 # p, q, r : conditions
+    #                 # s, t : leaf
+    #                 # u, v : dummy
+    #                 [ #  p  q  r  s  t   u  v
+    #                     [F, T, T, T, T,  T, T],
+    #                     [F, T, T, T, T,  T, F],
+    #                     [F, T, T, T, T,  F, T],
+    #                     [F, T, T, T, T,  F, F],
+    #                     
+    #                     [T, T, T, T, T,  T, T],
+    #                     [F, F, T, T, T,  T, F],
+    #                     [F, T, F, T, T,  F, T],
+    #                     [F, T, T, F, T,  F, F],
+    #                     [F, T, T, T, F,  T, T],
+    #                     
+    #                 ],
+    #                 k=3,
+    #                 cdt="(ite p v (ite q (ite r (and s t) v) v))"
+    #             )
 
 
 #     solver1 = SygusDisjunctive(
