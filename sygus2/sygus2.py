@@ -76,7 +76,7 @@ class SygusDisjunctive:
         self.q_count=0
         
         self.debug_one_path = False  
-        self.debug_one_tree = True
+        self.debug_one_tree = False
         
     
     def generate_all_trees(self, k):
@@ -388,7 +388,7 @@ class SygusDisjunctive:
     def number_nodes(self, root):
         def number_nodes_aux(root):
             # leaf 
-            if not root.left and not root.right:
+            if root.is_leaf():
                 # we dont need to number the leaves
                 root.leaf_index = self.q_count
                 self.q_count += 1
@@ -653,8 +653,8 @@ class SygusDisjunctive:
     
     def create_constraint(self, dt_paths, cdt):
         # one fixed structure for debugging
-        if self.debug_one_tree:
-            dt_paths  = ["101", "0", "100", "11"]
+        # if self.debug_one_tree:
+        #     dt_paths  = ["101", "0", "100", "11"]
         
         # convert list of paths to a tree
         dt_root = self.paths_to_tree(dt_paths)
