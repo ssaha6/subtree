@@ -603,7 +603,10 @@ class SygusDisjunctive:
                 
                 
                 # ----------------------------------------------------------------
+                
                 # L_pip compatible with L_pi
+                # left and right of each path should be incompatible
+                
                 ll_constraint = "\n\t(and true"
                 for s_node_index in left_pi:
                     for c_node_index in right_pip:
@@ -619,7 +622,54 @@ class SygusDisjunctive:
                 # ----------------------------------------------------------------
                 
                 
+                # For the check C(pi) is compatible with L(pi'), 
+                # for every predicate p in left(L(pi')), find the set of fv in FV(pi') that sat not-p. 
+                # And asserting that eval(fv) should hold for at least one of the feature vectors. 
+                # So p is false in all the feature vectors that sat not-p. 
+                # By asserting one of them will make eval true, we are making sure p won't be in C(pi), 
+                # and hence C(pi) and L(pi') are consistent. 
+                
                 # L_pip compatible with C_pi
+                # for p in left_pip:
+                #   (or 
+                #       fv in FV(pip) that sat not-p
+                #           eval_pi(fv)
+                #   )
+                # 
+                
+                
+                
+                # N: {p | not p in literals in L(pi')}
+                # and_p  { phi(p, c(pi)) => p is not-in N}      phi(p, c(pi)) = p in c(pi)
+                #  =>  and_p in N { not phi(p, c(pi)) }
+                
+                #  =>  and_p in N {
+                #          FV_!p = { fv | fv[p] = false }   ; all feature vectors that flows left on p in CDT
+                #          exists fv in FV_!p,  eval_pi(fv)
+                #       }
+                
+                # L(pi), C(pi) ... fv flow though pi, fv sat c(pi)
+                
+                
+                
+                # eval uses phi : 
+                # eval witness
+                
+                
+                # phi(p, c(pi))
+                #   ==> similar eval 
+                # fv flows through pi and has p to be false. 
+                
+                
+                # p in c(pi)
+                # iff there is no fv that flows through pi and has p to be false. 
+                #  
+                #  phi(p,c(pi))
+                # (p is in C(pi)) => p does not contradict with L(pi')
+                    
+                
+                
+                
                 lc_constraints = "\n\t(and true"
                 for p in left_pip:
                     sat_not_p, unsat_not_p = self.data_by_preds([], [p])
@@ -632,6 +682,34 @@ class SygusDisjunctive:
                 
                 
                 # ----------------------------------------------------------------
+                
+                # subset constraint: C_pip \subseteq  L_pi U C_pi
+                # rejected FV by pip should also be rejected by pi
+                
+                # To check that p in C(pi') subset of L(pi) U C(pi),
+                # we needed to check: L(pi) rejects (FV - FV(pi'))  
+                #       fv rejected by pi' 
+                # so for every fv in not-FV(pi'), adding the constraint:  not eval(fv). 
+                
+                # 
+                
+                # forall fv: feature vectors rejected by leaf_pip
+                #    not eval_pi(fv)
+                
+                # [
+                
+                # dt_paths  = ["1", "01", "000", "001"]
+                # 01: 
+                    # and_pi' potential(pi, pi') =>  
+                                # and_{p in c(pi')}
+                                #  or 
+                                #       p in L(pi) =  s0 == p 
+                                #       not {or_{ fv  fv[p] = false } 
+                                #                fv that flow though pi 
+                                #           }
+                
+                
+                
                 subset_constraint = "\n\t(and true"
                 sat_leaf_pip, unsat_leaf_pip = self.data_by_preds(leaf_pip, [])
                 for fv in unsat_leaf_pip:
@@ -643,9 +721,9 @@ class SygusDisjunctive:
                 
                 constraint =  str("\n(assert ;; pi = " + pi + ", pip = " + pip
                                 + "\n(=>"
-                                +   "\n\t(and"
-                                +           ll_constraint
-                                +           lc_constraints
+                                +   "\n\t(and"              #;; potential path 
+                                +           ll_constraint   #;; Literal_pi + Literal_pip
+                                +           lc_constraints  #;; Conjunct_pi + Literal_pip
                                 +      "\n\t)"
                                 +   subset_constraint
                                 + "\n))\n"
