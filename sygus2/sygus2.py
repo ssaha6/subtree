@@ -570,14 +570,14 @@ class SygusDisjunctive:
     # all true_predicates should be true and 
     # all flase_predicates should be false
     def data_by_preds(self, true_predicates, false_predicates):
-        fv = []
-        nfv = []
+        sat = []
+        unsat = []
         for data in self.cond_pred_data:
             if all([ data[p] == "true" for p in true_predicates]) and all([ data[p] == "false" for p in false_predicates]):
-                fv.append(data)
+                sat.append(data)
             else:
-                nfv.append(data)
-        return fv, nfv
+                unsat.append(data)
+        return sat, unsat
         
         
     def dt_subset(self, dt_paths, dt_root, cdt_paths, cdt_root):
