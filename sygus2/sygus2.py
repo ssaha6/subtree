@@ -580,9 +580,13 @@ class SygusDisjunctive:
         return sat, unsat
         
         
+    #==================================================================================================
+    
     def dt_subset(self, dt_paths, dt_root, cdt_paths, cdt_root):
         # cdt_paths = ["1", "00", "010", "011"]
         # dt_paths  = ["1", "01", "000", "001"]
+        
+        
         
         allconstraints = ""
         for pi in dt_paths:
@@ -594,11 +598,11 @@ class SygusDisjunctive:
                     pip = "011"
                 
                 
-                left_pi,  right_pi,  _  = self.extract_pred_from_path(pi,  dt_root )
+                left_pi,  right_pi,  _        = self.extract_pred_from_path(pi,  dt_root )
                 left_pip, right_pip, leaf_pip = self.extract_pred_from_path(pip, cdt_root)
                 
                 
-                ll_constraint = "\n\t(and true"
+                # ----------------------------------------------------------------
                 # L_pip compatible with L_pi
                 for s_node_index in left_pi:
                     for c_node_index in right_pip:
@@ -611,6 +615,7 @@ class SygusDisjunctive:
                 ll_constraint += "\n\t)"
                 
                 
+                # ----------------------------------------------------------------
                 
                 lc_constraints = "\n\t(and true"
                 # L_pip compatible with C_pi
@@ -623,6 +628,7 @@ class SygusDisjunctive:
                 lc_constraints += "\n\t)"
                 
                 
+                # ----------------------------------------------------------------
                 subset_constraint = "\n\t(and true"
                 # C_pip \subseteq  L_pi U C_pi
                 # rejected CFV by pip should also be rejected by pi
@@ -632,6 +638,7 @@ class SygusDisjunctive:
                 subset_constraint += "\n\t)"
                 
                 
+                # ----------------------------------------------------------------
                 
                 constraint =  str("\n(assert ;; pi = " + pi + ", pip = " + pip
                                 + "\n(=>"
@@ -642,6 +649,8 @@ class SygusDisjunctive:
                                 +   subset_constraint
                                 + "\n))\n"
                             )
+                
+                # ----------------------------------------------------------------
                 
                 if self.debug_one_path:
                    return constraint
