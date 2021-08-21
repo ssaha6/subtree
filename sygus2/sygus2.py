@@ -604,6 +604,7 @@ class SygusDisjunctive:
                 
                 # ----------------------------------------------------------------
                 # L_pip compatible with L_pi
+                ll_constraint = "\n\t(and true"
                 for s_node_index in left_pi:
                     for c_node_index in right_pip:
                         ll_constraint += "\n\t\t" + self.pred_neq_pred(s_node_index, c_node_index)
@@ -617,12 +618,14 @@ class SygusDisjunctive:
                 
                 # ----------------------------------------------------------------
                 
-                lc_constraints = "\n\t(and true"
+                
                 # L_pip compatible with C_pi
+                lc_constraints = "\n\t(and true"
                 for p in left_pip:
-                    fv_left, nfv_left = self.data_by_preds([], [p])
+                    sat_not_p, unsat_not_p = self.data_by_preds([], [p])
                     lc_constraints += "\n\t\t(or false;; pred_index = " + str(p)
-                    for fv in nfv_left:
+                    # fv_left,or nfv_left ?? 
+                    for fv in sat_not_p:
                         lc_constraints += "\n\t\t\t(eval_"+pi+ " " + " ".join(fv) + ")"
                     lc_constraints += "\n\t\t)"
                 lc_constraints += "\n\t)"
@@ -630,10 +633,8 @@ class SygusDisjunctive:
                 
                 # ----------------------------------------------------------------
                 subset_constraint = "\n\t(and true"
-                # C_pip \subseteq  L_pi U C_pi
-                # rejected CFV by pip should also be rejected by pi
-                fv_leaf, nfv_leaf = self.data_by_preds(leaf_pip, [])
-                for fv in nfv_leaf:
+                sat_leaf_pip, unsat_leaf_pip = self.data_by_preds(leaf_pip, [])
+                for fv in unsat_leaf_pip:
                     subset_constraint +=  "\n\t\t" + "(not (eval_"+pi+ " " + " ".join(fv) + "))"
                 subset_constraint += "\n\t)"
                 
